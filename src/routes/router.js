@@ -1,17 +1,15 @@
 const express = require("express");
-const app = express();
+const router = express.Router();
 const Parser = require("rss-parser");
 const parser = new Parser();
 
-app.get("/", (req, res) => {
-  const url = "";
+router.get("/feed", (req, res) => {
   parser.parseURL(
     "https://flipboard.com/@raimoseero/feed-nii8kd0sz.rss",
     function (err, feed) {
-      res.json(feed);
+      res.json(feed.items);
     }
   );
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("Kuku raadio " + PORT));
+module.exports = router;
