@@ -1,0 +1,8 @@
+.feedCard {
+  margin: 32px;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  padding: 32px;
+  flex-direction: column;
+}

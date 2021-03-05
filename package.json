@@ -6,7 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd client && npm start",
-    "dev": "concurrently -n 'server,client' -c 'green,blue' \"nodemon src/server.js\" \"npm run client\""
+    "server": "nodemon index.js",
+    "start": "node index.js",
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build",
+    "dev": "concurrently -n 'server,client' -c 'green,blue' \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
