@@ -5,7 +5,6 @@ import Frontpage from "./frontpage/frontpage";
 function App() {
   return (
     <div className="App">
-      <h1>News Feed</h1>
       <Frontpage />
     </div>
   );

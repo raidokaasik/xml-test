@@ -28,7 +28,9 @@ router.get("/feed", (req, res) => {
   router.post("/details", (req, res) => {
     console.log(req.body.payload);
     loadData = async () => {
-      await Mercury.parse(req.body.payload).then((result) => res.json(result));
+      await Mercury.parse(req.body.payload, {
+        contentType: "html",
+      }).then((result) => res.json(result));
     };
     loadData();
   });
