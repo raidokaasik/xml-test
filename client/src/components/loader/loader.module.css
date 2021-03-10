@@ -9,7 +9,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #fff;
+  background: rgb(148, 148, 148);
   animation: ldsGrid 1.2s linear infinite;
 }
 .ldsGrid div:nth-child(1) {

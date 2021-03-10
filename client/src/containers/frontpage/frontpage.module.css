@@ -23,10 +23,22 @@
   display: flex;
   flex-direction: row;
 }
+.loadingScreen {
+  top: 100px;
+  background: rgb(233, 233, 230);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 90%;
+  padding: 48px 64px;
+  overflow: auto;
+}
 
 .feed {
+  border-radius: 5px;
   top: 100px;
-  background: #ccc;
+  background: rgb(233, 233, 230);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-evenly;
@@ -45,17 +57,14 @@
   justify-items: flex-end;
 }
 
-.image {
-  width: 200px;
-  height: auto;
-}
-
-.card {
+.cardWrapper {
   width: 100%;
   height: 300px;
-  background: lightblue;
+  background: rgb(245, 246, 247);
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px;
+  justify-content: center;
+  box-shadow: 2px 2px 8px 2px rgba(164, 176, 197, 0.3);
 }

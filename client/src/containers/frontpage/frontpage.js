@@ -4,6 +4,8 @@ import axios from "axios";
 import Loader from "../../components/loader/loader";
 import Modal from "../../components/modal/modal";
 import Blackscreen from "../../components/blackscreen/blackscreen";
+import Card from "../../components/card/card";
+import Loadedcard from "../../components/card/loadedcard";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
@@ -155,33 +157,26 @@ class Frontpage extends Component {
       return (
         <Fragment key={index}>
           {!item.loaded ? (
-            <div className={classes.card}>
-              {/* Remove button */}
-              <button onClick={() => this.removeFeed(item.guid)}>X</button>
-              <button onClick={() => this.loadDetails(item.guid)}>Load</button>
-              <p>{item.title}</p>
-              <div className={classes.contentContainer}>BOX</div>
-              <p>{item.content}</p>
+            <div className={classes.cardWrapper}>
+              <Card
+                title={item.title}
+                content={item.content}
+                close={() => this.removeFeed(item.guid)}
+                add={() => this.loadDetails(item.guid)}
+              />
             </div>
           ) : item.loaded ? (
-            <div className={classes.card} key={index}>
+            <div className={classes.cardWrapper}>
               {item.contentLoading ? (
                 <Loader />
               ) : (
-                <div>
-                  {/* Remove button */}
-                  <img
-                    className={classes.image}
-                    src={details.lead_image_url}
-                    alt="feed_image"
-                  />
-                  <p>{details.title}</p>
-                  <p>{details.author}</p>
-                  <button onClick={() => this.loadFullArticle(item.guid)}>
-                    Load Modal
-                  </button>
-                  <button onClick={() => this.removeFeed(item.guid)}>X</button>
-                </div>
+                <Loadedcard
+                  image={details.lead_image_url}
+                  title={details.title}
+                  author={details.author}
+                  loadFull={() => this.loadFullArticle(item.guid)}
+                  remove={() => this.removeFeed(item.guid)}
+                />
               )}
             </div>
           ) : null}
@@ -213,7 +208,11 @@ class Frontpage extends Component {
             <h1>News Feed</h1>
             <button>sort</button>
           </div>
-          <div className={classes.feed}>
+          <div
+            className={
+              this.state.loading ? classes.loadingScreen : classes.feed
+            }
+          >
             {this.state.loading ? <Loader /> : feed}
           </div>
           <div className={classes.footer}>
