@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
-import {} from "react-router-dom";
 import axios from "axios";
 import Loader from "../../components/loader/loader";
 import Modal from "../../components/modal/modal";
 import Blackscreen from "../../components/blackscreen/blackscreen";
 import Card from "../../components/card/card";
 import Loadedcard from "../../components/card/loadedcard";
+import Editcard from "../../components/card/editcard/editcard";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
@@ -13,30 +13,31 @@ class Frontpage extends Component {
     fetchedData: [],
     fullArticle: {},
     loading: false,
-    contentLoading: false,
+
     showBlackscreen: false,
     showModal: false,
   };
 
   componentDidMount() {
-    this.getSession().then((res) => {
-      if (res) {
-        this.setState({ fetchedData: res });
-      } else {
-        this.loadData();
-      }
-    });
+    // this.getSession().then((res) => {
+    //   if (res) {
+    //     this.setState({ fetchedData: res });
+    //   } else {
+    //     this.loadData();
+    //   }
+    // });
+    this.loadData();
   }
   // SET and GET sessions
 
-  setSession = (data) => {
-    sessionStorage.setItem("mySession", JSON.stringify(data));
-  };
+  // setSession = (data) => {
+  //   sessionStorage.setItem("mySession", JSON.stringify(data));
+  // };
 
-  getSession = async () => {
-    let data = sessionStorage.getItem("mySession");
-    return await JSON.parse(data);
-  };
+  // getSession = async () => {
+  //   let data = sessionStorage.getItem("mySession");
+  //   return await JSON.parse(data);
+  // };
   // Fetch initial data from Back-end API
 
   loadData = () => {
@@ -59,6 +60,7 @@ class Frontpage extends Component {
         newData.push({
           ...data.data[item],
           loaded: false,
+          contentEditing: false,
           contentLoading: false,
           detailedData: {},
         });
@@ -79,6 +81,21 @@ class Frontpage extends Component {
         console.log("Server error:" + e);
       });
   };
+
+  // Initiating feed card editing
+
+  contentEditing = (id, value) => {
+    const copiedState = [...this.state.fetchedData];
+    for (let item in copiedState) {
+      if (copiedState[item].guid === id) {
+        copiedState[item].contentEditing = value;
+        console.log("Content is being edited: " + value);
+      }
+    }
+    this.setState({ fetchedData: copiedState });
+  };
+
+  // Initiating feed card loading
 
   contentLoading = (id, value) => {
     const copiedState = [...this.state.fetchedData];
@@ -108,8 +125,28 @@ class Frontpage extends Component {
       };
       this.setState({ fetchedData: copiedState });
       this.contentLoading(id, false);
-      this.setSession(copiedState);
+      // this.setSession(copiedState);
     });
+  };
+
+  // Edit feed
+
+  editFeed = (e, id) => {
+    console.log(e.target.value);
+    console.log(e.target.name);
+    this.contentEditing(id, true);
+    const copiedState = [...this.state.fetchedData];
+    const index = copiedState.indexOf(
+      copiedState.filter((item) => item.guid === id)[0]
+    );
+    const selectedItem = copiedState[index];
+    selectedItem.detailedData.data[e.target.name] = e.target.value;
+    this.setState({ fetchedData: copiedState });
+  };
+
+  saveEdit = (id) => {
+    console.log("save");
+    this.contentEditing(id, false);
   };
 
   // Remove Feed
@@ -117,7 +154,7 @@ class Frontpage extends Component {
   removeFeed = (id) => {
     const newList = this.state.fetchedData.filter((item) => item.guid !== id);
     this.setState({ fetchedData: newList });
-    this.setSession(newList);
+    // this.setSession(newList);
   };
 
   // Handle full Article
@@ -150,15 +187,15 @@ class Frontpage extends Component {
   };
 
   render() {
-    // const loading = <p>Loading...</p>;
-
     const feed = this.state.fetchedData.map((item, index) => {
-      const details = item.detailedData.data;
+      // const details = item.detailedData.data;
       return (
         <Fragment key={index}>
           {!item.loaded ? (
             <div className={classes.cardWrapper}>
               <Card
+                editing={item.contentEditing}
+                edit={() => this.editFeed(item.guid)}
                 title={item.title}
                 content={item.content}
                 close={() => this.removeFeed(item.guid)}
@@ -171,9 +208,12 @@ class Frontpage extends Component {
                 <Loader />
               ) : (
                 <Loadedcard
-                  image={details.lead_image_url}
-                  title={details.title}
-                  author={details.author}
+                  submit={() => this.saveEdit(item.guid)}
+                  editing={item.contentEditing}
+                  edit={(e) => this.editFeed(e, item.guid)}
+                  image={item.detailedData.data.lead_image_url}
+                  title={item.detailedData.data.title}
+                  author={item.detailedData.data.author}
                   loadFull={() => this.loadFullArticle(item.guid)}
                   remove={() => this.removeFeed(item.guid)}
                 />
