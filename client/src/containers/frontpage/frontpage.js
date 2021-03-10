@@ -1,11 +1,10 @@
-import React, { Component, Fragment } from "react";
+import React, {Component, Fragment} from "react";
 import axios from "axios";
 import Loader from "../../components/loader/loader";
 import Modal from "../../components/modal/modal";
 import Blackscreen from "../../components/blackscreen/blackscreen";
 import Card from "../../components/card/card";
 import Loadedcard from "../../components/card/loadedcard";
-import Editcard from "../../components/card/editcard/editcard";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
@@ -13,7 +12,6 @@ class Frontpage extends Component {
     fetchedData: [],
     fullArticle: {},
     loading: false,
-
     showBlackscreen: false,
     showModal: false,
   };
@@ -41,43 +39,54 @@ class Frontpage extends Component {
   // Fetch initial data from Back-end API
 
   loadData = () => {
-    this.setState({ loading: true });
+    this.setState({loading: true});
     const promise = new Promise((resolve, reject) => {
       axios({
         url: "/feed",
         method: "GET",
       })
-        .then((data) => {
+        .then(data => {
           resolve(data);
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     });
-    promise.then((data) => {
+    promise.then(data => {
       const newData = [];
+      const categories = [];
       for (let item in data.data) {
+        // if (data.data[item].categories) {
+        //   for (let link in data.data[item].categories) {
+        //     categories.push({
+        //       title: data.data[item].categories[link].$.domain,
+        //       tag: data.data[item].categories[link]._,
+        //     });
+        //   }
+        //   console.log(categories);
+        // }
         newData.push({
           ...data.data[item],
           loaded: false,
+          error: false,
           contentEditing: false,
           contentLoading: false,
           detailedData: {},
         });
       }
-      this.setState({ fetchedData: newData, loading: false });
+      this.setState({fetchedData: newData, loading: false});
     });
   };
 
   // UTILS
 
-  linkHandler = async (link) => {
+  linkHandler = async link => {
     return await axios
-      .post("/details", { payload: link })
-      .then((response) => {
+      .post("/details", {payload: link})
+      .then(response => {
         return response.data;
       })
-      .catch((e) => {
+      .catch(e => {
         console.log("Server error:" + e);
       });
   };
@@ -86,46 +95,48 @@ class Frontpage extends Component {
 
   contentEditing = (id, value) => {
     const copiedState = [...this.state.fetchedData];
-    for (let item in copiedState) {
-      if (copiedState[item].guid === id) {
-        copiedState[item].contentEditing = value;
-        console.log("Content is being edited: " + value);
-      }
-    }
-    this.setState({ fetchedData: copiedState });
+    const index = copiedState.indexOf(
+      copiedState.filter(item => item.guid === id)[0]
+    );
+    const selectedItem = copiedState[index];
+    selectedItem.contentEditing = value;
+    this.setState({fetchedData: copiedState});
   };
 
   // Initiating feed card loading
 
   contentLoading = (id, value) => {
     const copiedState = [...this.state.fetchedData];
-    for (let item in copiedState) {
-      if (copiedState[item].guid === id) {
-        copiedState[item].contentLoading = value;
-        console.log("Content is Loading: " + value);
-      }
-    }
-    this.setState({ fetchedData: copiedState });
+    const index = copiedState.indexOf(
+      copiedState.filter(item => item.guid === id)[0]
+    );
+    const selectedItem = copiedState[index];
+    selectedItem.contentLoading = value;
+    this.setState({fetchedData: copiedState});
   };
 
   // Load
 
-  loadDetails = (id) => {
+  loadDetails = id => {
     this.contentLoading(id, true);
     const copiedState = [...this.state.fetchedData];
     const index = copiedState.indexOf(
-      copiedState.filter((item) => item.guid === id)[0]
+      copiedState.filter(item => item.guid === id)[0]
     );
     const selectedItem = copiedState[index];
     selectedItem.loaded = true;
     const output = this.linkHandler(selectedItem.link);
-    output.then((res) => {
-      selectedItem.detailedData = {
-        data: res,
-      };
-      this.setState({ fetchedData: copiedState });
-      this.contentLoading(id, false);
-      // this.setSession(copiedState);
+    output.then(res => {
+      console.log(res);
+      if (res.error) {
+        selectedItem.error = true;
+      } else {
+        selectedItem.detailedData = {
+          data: res,
+        };
+        this.setState({fetchedData: copiedState});
+        this.contentLoading(id, false);
+      }
     });
   };
 
@@ -137,29 +148,29 @@ class Frontpage extends Component {
     this.contentEditing(id, true);
     const copiedState = [...this.state.fetchedData];
     const index = copiedState.indexOf(
-      copiedState.filter((item) => item.guid === id)[0]
+      copiedState.filter(item => item.guid === id)[0]
     );
     const selectedItem = copiedState[index];
     selectedItem.detailedData.data[e.target.name] = e.target.value;
-    this.setState({ fetchedData: copiedState });
+    this.setState({fetchedData: copiedState});
   };
 
-  saveEdit = (id) => {
+  saveEdit = id => {
     console.log("save");
     this.contentEditing(id, false);
   };
 
   // Remove Feed
 
-  removeFeed = (id) => {
-    const newList = this.state.fetchedData.filter((item) => item.guid !== id);
-    this.setState({ fetchedData: newList });
+  removeFeed = id => {
+    const newList = this.state.fetchedData.filter(item => item.guid !== id);
+    this.setState({fetchedData: newList});
     // this.setSession(newList);
   };
 
   // Handle full Article
 
-  loadFullArticle = (id) => {
+  loadFullArticle = id => {
     const copiedState = [...this.state.fetchedData];
     const load = async () => {
       for (let item of copiedState) {
@@ -168,7 +179,7 @@ class Frontpage extends Component {
         }
       }
     };
-    load().then((res) => {
+    load().then(res => {
       console.log(res.detailedData.data);
       this.setState({
         fullArticle: res.detailedData.data,
@@ -188,7 +199,7 @@ class Frontpage extends Component {
 
   render() {
     const feed = this.state.fetchedData.map((item, index) => {
-      // const details = item.detailedData.data;
+      const details = item.detailedData.data;
       return (
         <Fragment key={index}>
           {!item.loaded ? (
@@ -208,12 +219,13 @@ class Frontpage extends Component {
                 <Loader />
               ) : (
                 <Loadedcard
+                  error={item.error}
                   submit={() => this.saveEdit(item.guid)}
                   editing={item.contentEditing}
-                  edit={(e) => this.editFeed(e, item.guid)}
-                  image={item.detailedData.data.lead_image_url}
-                  title={item.detailedData.data.title}
-                  author={item.detailedData.data.author}
+                  edit={e => this.editFeed(e, item.guid)}
+                  image={details.lead_image_url}
+                  title={details.title}
+                  author={details.author}
                   loadFull={() => this.loadFullArticle(item.guid)}
                   remove={() => this.removeFeed(item.guid)}
                 />

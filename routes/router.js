@@ -30,7 +30,7 @@ router.get("/feed", (req, res) => {
     loadData = async () => {
       await Mercury.parse(req.body.payload, {
         contentType: "html",
-      }).then((result) => res.json(result));
+      }).then(result => res.json(result));
     };
     loadData();
   });
