@@ -1,19 +1,19 @@
 import React, { Fragment } from "react";
 import classes from "./modal.module.css";
 
-const modal = (props) => {
+const modal = ({ clicked, show, image, title, date, body }) => {
   return (
     <Fragment>
-      {props.show ? (
+      {show ? (
         <div className={classes.wrapper}>
           <div className={classes.container}>
-            <button onClick={props.clicked}>X</button>
+            <button onClick={clicked}>X</button>
             <div className={classes.leadImage}>
-              <img src={props.image} alt="lead_image" />
+              <img src={image} alt="lead_image" />
             </div>
-            {props.title}
-            <div className={classes.body}>{props.body}</div>
-            {props.date}
+            {title}
+            <div className={classes.body}>{body}</div>
+            {date}
           </div>
         </div>
       ) : null}

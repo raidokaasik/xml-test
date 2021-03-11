@@ -7,7 +7,7 @@
   flex-direction: column;
   align-items: center;
   border-radius: 5px;
-  border: 1px solid rgba(164, 176, 197, 0.4);
+  /* border: 1px solid rgba(164, 176, 197, 0.4); */
   transition: all 0.1s ease;
 }
 
@@ -44,12 +44,3 @@
   height: 180px;
   object-fit: cover;
 }
-
-/* .tag {
-  background: rgb(206, 34, 206);
-  padding: 6px 24px;
-  top: 20px;
-  left: 20px;
-  position: absolute;
-  z-index: 2;
-} */

@@ -5,7 +5,7 @@ import Modal from "../../components/modal/modal";
 import Blackscreen from "../../components/blackscreen/blackscreen";
 import Card from "../../components/card/card";
 import Loadedcard from "../../components/card/loadedcard";
-import Editcard from "../../components/card/editcard/editcard";
+import Feed from "../../components/feed/feed";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
@@ -13,7 +13,6 @@ class Frontpage extends Component {
     fetchedData: [],
     fullArticle: {},
     loading: false,
-
     showBlackscreen: false,
     showModal: false,
   };
@@ -62,7 +61,7 @@ class Frontpage extends Component {
           loaded: false,
           contentEditing: false,
           contentLoading: false,
-          detailedData: {},
+          details: [],
         });
       }
       this.setState({ fetchedData: newData, loading: false });
@@ -86,12 +85,11 @@ class Frontpage extends Component {
 
   contentEditing = (id, value) => {
     const copiedState = [...this.state.fetchedData];
-    for (let item in copiedState) {
-      if (copiedState[item].guid === id) {
-        copiedState[item].contentEditing = value;
-        console.log("Content is being edited: " + value);
-      }
-    }
+    const index = copiedState.indexOf(
+      copiedState.filter((item) => item.guid === id)[0]
+    );
+    const selectedItem = copiedState[index];
+    selectedItem.contentEditing = value;
     this.setState({ fetchedData: copiedState });
   };
 
@@ -99,12 +97,11 @@ class Frontpage extends Component {
 
   contentLoading = (id, value) => {
     const copiedState = [...this.state.fetchedData];
-    for (let item in copiedState) {
-      if (copiedState[item].guid === id) {
-        copiedState[item].contentLoading = value;
-        console.log("Content is Loading: " + value);
-      }
-    }
+    const index = copiedState.indexOf(
+      copiedState.filter((item) => item.guid === id)[0]
+    );
+    const selectedItem = copiedState[index];
+    selectedItem.contentLoading = value;
     this.setState({ fetchedData: copiedState });
   };
 
@@ -118,15 +115,38 @@ class Frontpage extends Component {
     );
     const selectedItem = copiedState[index];
     selectedItem.loaded = true;
-    const output = this.linkHandler(selectedItem.link);
-    output.then((res) => {
-      selectedItem.detailedData = {
-        data: res,
-      };
-      this.setState({ fetchedData: copiedState });
-      this.contentLoading(id, false);
-      // this.setSession(copiedState);
-    });
+
+    if (selectedItem.categories) {
+      Promise.all(
+        selectedItem.categories.map((item) => {
+          return this.linkHandler(item.$.domain).then((res) => {
+            return {
+              tag: item._ ? item._ : "Trends",
+              body: res,
+            };
+          });
+        })
+      )
+        .then((results) => {
+          const output = this.linkHandler(selectedItem.link);
+          return output.then((res) => {
+            results.push({ tag: "Trends", body: res });
+            return results;
+          });
+        })
+        .then((results) => {
+          selectedItem.details = results;
+          this.setState({ fetchedData: copiedState });
+          this.contentLoading(id, false);
+        });
+    } else {
+      const output = this.linkHandler(selectedItem.link);
+      output.then((res) => {
+        selectedItem.details.push({ tag: "Trends", body: res });
+        this.setState({ fetchedData: copiedState });
+        this.contentLoading(id, false);
+      });
+    }
   };
 
   // Edit feed
@@ -159,19 +179,23 @@ class Frontpage extends Component {
 
   // Handle full Article
 
-  loadFullArticle = (id) => {
+  loadFullArticle = (title, id) => {
     const copiedState = [...this.state.fetchedData];
+    const index = copiedState.indexOf(
+      copiedState.filter((item) => item.guid === id)[0]
+    );
+    const selectedItem = copiedState[index];
     const load = async () => {
-      for (let item of copiedState) {
-        if ((await item.guid) === id) {
-          return item;
+      for (let item in selectedItem.details) {
+        if ((await selectedItem.details[item].body.title) === title) {
+          return selectedItem.details[item];
         }
       }
     };
     load().then((res) => {
-      console.log(res.detailedData.data);
+      console.log(res);
       this.setState({
-        fullArticle: res.detailedData.data,
+        fullArticle: res,
         showModal: true,
         showBlackscreen: true,
       });
@@ -187,42 +211,6 @@ class Frontpage extends Component {
   };
 
   render() {
-    const feed = this.state.fetchedData.map((item, index) => {
-      // const details = item.detailedData.data;
-      return (
-        <Fragment key={index}>
-          {!item.loaded ? (
-            <div className={classes.cardWrapper}>
-              <Card
-                editing={item.contentEditing}
-                edit={() => this.editFeed(item.guid)}
-                title={item.title}
-                content={item.content}
-                close={() => this.removeFeed(item.guid)}
-                add={() => this.loadDetails(item.guid)}
-              />
-            </div>
-          ) : item.loaded ? (
-            <div className={classes.cardWrapper}>
-              {item.contentLoading ? (
-                <Loader />
-              ) : (
-                <Loadedcard
-                  submit={() => this.saveEdit(item.guid)}
-                  editing={item.contentEditing}
-                  edit={(e) => this.editFeed(e, item.guid)}
-                  image={item.detailedData.data.lead_image_url}
-                  title={item.detailedData.data.title}
-                  author={item.detailedData.data.author}
-                  loadFull={() => this.loadFullArticle(item.guid)}
-                  remove={() => this.removeFeed(item.guid)}
-                />
-              )}
-            </div>
-          ) : null}
-        </Fragment>
-      );
-    });
     const modal = (
       <Fragment>
         <Modal
@@ -239,7 +227,6 @@ class Frontpage extends Component {
         />
       </Fragment>
     );
-
     return (
       <div className={classes.container}>
         {modal}
@@ -253,7 +240,18 @@ class Frontpage extends Component {
               this.state.loading ? classes.loadingScreen : classes.feed
             }
           >
-            {this.state.loading ? <Loader /> : feed}
+            {this.state.loading ? (
+              <Loader />
+            ) : (
+              <Feed
+                fetchedData={this.state.fetchedData}
+                saveEdit={this.saveEdit}
+                editFeed={this.editFeed}
+                loadFull={this.loadFullArticle}
+                removeFeed={this.removeFeed}
+                loadDetails={this.loadDetails}
+              />
+            )}
           </div>
           <div className={classes.footer}>
             <h1>2021</h1>

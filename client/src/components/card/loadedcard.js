@@ -1,4 +1,5 @@
 import React from "react";
+import Tag from "./tag/tag";
 import classes from "./loadedcard.module.css";
 
 const Loadedcard = ({
@@ -10,10 +11,12 @@ const Loadedcard = ({
   edit,
   editing,
   submit,
+  tag,
+  date,
 }) => {
   return (
     <div className={classes.card}>
-      {/* <div className={classes.tag}>tag</div> */}
+      <Tag name={tag} />
       <div className={classes.imageWrapper}>
         <img
           className={classes.image}
@@ -32,6 +35,7 @@ const Loadedcard = ({
         <div className={classes.titleNauthor}>
           <p>{title}</p>
           <p>{author}</p>
+          <p>{date}</p>
         </div>
       )}
       <div className={classes.deleteEditOverlay}>
