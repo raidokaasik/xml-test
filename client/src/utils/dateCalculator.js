@@ -1,7 +1,7 @@
 const dateCalculator = (date) => {
   const currentDate = new Date().getTime();
   const newDate = Date.parse(date);
-  if (newDate <= 0) {
+  if (!date || date === null || newDate <= 0) {
     return "No date available";
   } else {
     const daysDifference = Math.ceil(
@@ -27,8 +27,7 @@ const dateCalculator = (date) => {
         string1 % 7 === 0
           ? numberofWeeks + weeks
           : numberofWeeks + weeks + numberofDays + days;
-      console.log(numberofMonths);
-      console.log(numberofYears);
+
       return output;
     };
 

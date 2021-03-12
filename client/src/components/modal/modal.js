@@ -1,8 +1,20 @@
 import React, { Fragment } from "react";
 import Loader from "../loader/loader";
+import Tag from "../card/tag/tag";
 import classes from "./modal.module.css";
 
-const modal = ({ clicked, show, image, title, date, body, loading }) => {
+const modal = ({
+  clicked,
+  show,
+  image,
+  title,
+  content,
+  date,
+  tag,
+  body,
+  loading,
+  author,
+}) => {
   return (
     <Fragment>
       {show ? (
@@ -12,13 +24,20 @@ const modal = ({ clicked, show, image, title, date, body, loading }) => {
               <Loader />
             ) : (
               <Fragment>
-                <button onClick={clicked}>X</button>
-                <div className={classes.leadImage}>
-                  <img src={image} alt="lead_image" />
+                <div className={classes.modalHeader}>
+                  <div className={classes.tag}>
+                    <Tag name={tag} />
+                  </div>
+                  <div className={classes.leadImage}>
+                    <img src={image} alt="lead_image" />
+                  </div>
+                  <p>{title}</p>
+                  <button onClick={clicked}>X</button>
                 </div>
-                {title}
                 <div className={classes.body}>{body}</div>
-                {date}
+                <div className={classes.content}>{content}</div>
+                <p>{date}</p>
+                <p>{author}</p>
               </Fragment>
             )}
           </div>

@@ -11,8 +11,11 @@ import classes from "./frontpage.module.css";
 class Frontpage extends Component {
   state = {
     fetchedData: [],
+    myFeed: [],
+    pushingInProgress: false,
     fullArticle: {},
     loading: false,
+
     modalLoading: false,
     showBlackscreen: false,
     showModal: false,
@@ -110,41 +113,53 @@ class Frontpage extends Component {
 
   loadDetails = (id) => {
     this.contentLoading(id, true);
+    this.setState({ pushingInProgress: true });
     const copiedState = [...this.state.fetchedData];
+    let myFeedCopy = [...this.state.myFeed];
     const index = copiedState.indexOf(
       copiedState.filter((item) => item.guid === id)[0]
     );
     const selectedItem = copiedState[index];
     selectedItem.loaded = true;
-
     if (selectedItem.categories) {
       Promise.all(
-        selectedItem.categories.map((item) => {
+        selectedItem.categories.map(async (item) => {
           return this.linkHandler(item.$.domain).then((res) => {
-            return {
-              tag: item._ ? item._ : "Trends",
-              body: res,
-            };
+            myFeedCopy = [
+              ...myFeedCopy,
+              {
+                tag: item._ ? item._ : "Trends",
+                body: res,
+                id: id + Math.floor(Math.random() * 100),
+                isModal: false,
+              },
+            ];
           });
         })
       )
-        .then((results) => {
+        .then(async () => {
           const output = this.linkHandler(selectedItem.link);
           return output.then((res) => {
-            results.push({ tag: "Trends", body: res });
-            return results;
+            myFeedCopy = [
+              ...myFeedCopy,
+              {
+                tag: "Trends",
+                body: res,
+                id: id + Math.floor(Math.random() * 100),
+                isModal: false,
+              },
+            ];
           });
         })
-        .then((results) => {
-          selectedItem.details = results;
-          this.setState({ fetchedData: copiedState });
+        .then(() => {
+          this.setState({ myFeed: myFeedCopy, pushingInProgress: false });
           this.contentLoading(id, false);
         });
     } else {
       const output = this.linkHandler(selectedItem.link);
       output.then((res) => {
-        selectedItem.details.push({ tag: "Trends", body: res });
-        this.setState({ fetchedData: copiedState });
+        myFeedCopy.push({ tag: "Trends", body: res, id: id, isModal: false });
+        this.setState({ myFeed: myFeedCopy, pushingInProgress: false });
         this.contentLoading(id, false);
       });
     }
@@ -180,51 +195,117 @@ class Frontpage extends Component {
 
   // Handle full Article
 
-  loadFullArticle = (title, id) => {
+  loadFullArticle = (id) => {
+    console.log("load full article");
     this.setState({
       modalLoading: true,
-      showModal: true,
-      showBlackscreen: true,
     });
-    const copiedState = [...this.state.fetchedData];
-    const index = copiedState.indexOf(
-      copiedState.filter((item) => item.guid === id)[0]
-    );
-    const selectedItem = copiedState[index];
-    const load = async () => {
-      for (let item in selectedItem.details) {
-        if ((await selectedItem.details[item].body.title) === title) {
-          return selectedItem.details[item];
-        }
-      }
-    };
-    load().then((res) => {
-      console.log(res);
-      this.setState({
-        fullArticle: res,
-        modalLoading: false,
+    const copiedState = [...this.state.myFeed];
+    Promise.all(copiedState.filter((item) => item.id === id))
+      .then((res) => {
+        this.setState({
+          fullArticle: {
+            author: res[0].body.author,
+            title: res[0].body.title,
+            id: res[0].id,
+            tag: res[0].tag,
+            content: res[0].body.content,
+            date: res[0].body.date_published
+              ? res[0].body.date_published
+              : res[0].body.date,
+            image: res[0].body.lead_image_url,
+            url: res[0].body.url,
+            exceprt: res[0].body.exceprt,
+          },
+        });
+      })
+      .then(() => {
+        console.log(this.state.fullArticle);
+        console.log("finished");
+        this.setState({
+          modalLoading: false,
+          showModal: true,
+          showBlackscreen: true,
+        });
       });
-    });
   };
 
   closeFullArticle = () => {
     this.setState({
+      fullArticle: {},
       showModal: false,
       showBlackscreen: false,
-      fullArticle: {},
     });
   };
 
   render() {
+    const initialData = this.state.fetchedData.map((item, index) => {
+      return (
+        <div
+          className={item.loaded ? classes.dataDisabled : classes.data}
+          key={index}
+        >
+          {this.state.pushingInProgress ? null : (
+            <div className={classes.deleteEditOverlay}>
+              <button
+                onClick={() => this.loadDetails(item.guid)}
+                disabled={item.loaded}
+              >
+                Add
+              </button>
+            </div>
+          )}
+
+          {item.contentLoading ? (
+            <Loader />
+          ) : (
+            <Fragment>
+              <p>{item.title}</p>
+              <p>
+                {item.author
+                  ? item.author
+                  : item.creator
+                  ? item.creator
+                  : "Anonymous"}
+              </p>
+              <p>{item.pubDate}</p>
+            </Fragment>
+          )}
+        </div>
+      );
+    });
+    const myFeed = this.state.myFeed.map((item, index) => (
+      <Loadedcard
+        key={index}
+        tag={item.tag}
+        // submit={() => saveEdit(item.guid)}
+        // editing={item.contentEditing}
+        // edit={(e) => editFeed(e, item.guid)}
+        image={item.body.lead_image_url}
+        title={item.body.title}
+        author={item.body.author ? item.body.author : "Anonymous"}
+        loadFull={() => this.loadFullArticle(item.id)}
+        // remove={() => removeFeed(item.guid)}
+        date={
+          item.body.date_published ? item.body.date_published : "date unknown"
+        }
+      />
+    ));
+
+    // MODAL
+    const full = this.state.fullArticle;
     const modal = (
       <Fragment>
         <Modal
+          tag={full.tag}
+          image={full.image}
           loading={this.state.modalLoading}
-          image={this.state.fullArticle.b}
           show={this.state.showModal}
-          title={this.state.fullArticle.title}
-          body={this.state.fullArticle.content}
-          date={this.state.fullArticle.date_published}
+          title={full.title}
+          body={full.exceprt}
+          date={full.date}
+          author={full.author}
+          content={full.content}
           clicked={() => this.closeFullArticle()}
         />
         <Blackscreen
@@ -233,32 +314,25 @@ class Frontpage extends Component {
         />
       </Fragment>
     );
+
     return (
       <div className={classes.container}>
-        {modal}
-        <div className={classes.wrapper}>
+        {this.state.showModal && !this.state.modalLoading ? modal : null}
+        <div className={classes.initialFeedWrapper}>
           <div className={classes.header}>
             <h1>News Feed</h1>
             <button>sort</button>
           </div>
-          <div
-            className={
-              this.state.loading ? classes.loadingScreen : classes.feed
-            }
-          >
-            {this.state.loading ? (
-              <Loader />
-            ) : (
-              <Feed
-                fetchedData={this.state.fetchedData}
-                saveEdit={this.saveEdit}
-                editFeed={this.editFeed}
-                loadFull={this.loadFullArticle}
-                removeFeed={this.removeFeed}
-                loadDetails={this.loadDetails}
-              />
-            )}
+          <div className={classes.initialFeed}>
+            {this.state.loading ? <Loader /> : initialData.sort()}
           </div>
+        </div>
+        <div className={classes.wrapper}>
+          <div className={classes.header}>
+            <h1>My Feed</h1>
+            <button>sort</button>
+          </div>
+          <div className={classes.feed}>{myFeed}</div>
           <div className={classes.footer}>
             <h1>2021</h1>
           </div>
