@@ -13,7 +13,10 @@ const Card = ({ title, content, id, close, add, loading, author, date }) => {
           <div className={classes.deleteEditOverlay}>
             <button onClick={close}>X</button>
           </div>
-          <button onClick={add}>Load</button>
+          <div className={classes.add} onClick={add}>
+            <i className="fas fa-plus"></i>
+            <p>Add</p>
+          </div>
           <h3>{title}</h3>
           <p>{content}</p>
           <p>{author}</p>

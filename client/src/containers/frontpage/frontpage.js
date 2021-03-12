@@ -13,6 +13,7 @@ class Frontpage extends Component {
     fetchedData: [],
     fullArticle: {},
     loading: false,
+    modalLoading: false,
     showBlackscreen: false,
     showModal: false,
   };
@@ -180,6 +181,11 @@ class Frontpage extends Component {
   // Handle full Article
 
   loadFullArticle = (title, id) => {
+    this.setState({
+      modalLoading: true,
+      showModal: true,
+      showBlackscreen: true,
+    });
     const copiedState = [...this.state.fetchedData];
     const index = copiedState.indexOf(
       copiedState.filter((item) => item.guid === id)[0]
@@ -196,8 +202,7 @@ class Frontpage extends Component {
       console.log(res);
       this.setState({
         fullArticle: res,
-        showModal: true,
-        showBlackscreen: true,
+        modalLoading: false,
       });
     });
   };
@@ -214,7 +219,8 @@ class Frontpage extends Component {
     const modal = (
       <Fragment>
         <Modal
-          image={this.state.fullArticle.lead_image_url}
+          loading={this.state.modalLoading}
+          image={this.state.fullArticle.b}
           show={this.state.showModal}
           title={this.state.fullArticle.title}
           body={this.state.fullArticle.content}

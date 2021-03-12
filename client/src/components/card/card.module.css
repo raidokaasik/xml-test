@@ -36,3 +36,22 @@
   position: absolute;
   right: 40px;
 }
+.add {
+  cursor: pointer;
+  border-radius: 50px;
+  background: rgb(234, 235, 229);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0px 1px 2px rgba(45, 55, 72, 0.08);
+  padding: 6px 18px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-direction: row;
+  color: #4a5568;
+}
+.add:hover {
+  border: 1px solid #d2d9e0;
+}
+.add i {
+  font-size: 16px;
+}

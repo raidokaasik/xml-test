@@ -1,5 +1,6 @@
 import React from "react";
 import Tag from "./tag/tag";
+import dateCalculator from "../../utils/dateCalculator";
 import classes from "./loadedcard.module.css";
 
 const Loadedcard = ({
@@ -35,7 +36,7 @@ const Loadedcard = ({
         <div className={classes.titleNauthor}>
           <p>{title}</p>
           <p>{author}</p>
-          <p>{date}</p>
+          <p>{dateCalculator(date)}</p>
         </div>
       )}
       <div className={classes.deleteEditOverlay}>
