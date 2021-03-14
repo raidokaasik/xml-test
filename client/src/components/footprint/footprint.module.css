@@ -1,0 +1,18 @@
+.footprint {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: rgba(211, 214, 218, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: 1px solid rgba(210, 214, 221, 0.4);
+  transition: all 0.3s ease;
+}
+.footprint p {
+  color: rgba(210, 214, 221, 0.9);
+  font-size: 24px;
+  font-weight: 300;
+}

@@ -5,20 +5,24 @@ import Modal from "../../components/modal/modal";
 import Blackscreen from "../../components/blackscreen/blackscreen";
 import Card from "../../components/card/card";
 import Loadedcard from "../../components/card/loadedcard";
-import Feed from "../../components/feed/feed";
+import Footprint from "../../components/footprint/footprint";
+import contentLoading from "../../utils/contentLoading";
+import urlParser from "../../utils/urlParser";
+import Button from "../../components/button/button";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
   state = {
     fetchedData: [],
     myFeed: [],
+    filteredFeed: [],
     pushingInProgress: false,
     fullArticle: {},
     loading: false,
-
     modalLoading: false,
     showBlackscreen: false,
     showModal: false,
+    sortLatest: false,
   };
 
   componentDidMount() {
@@ -57,63 +61,44 @@ class Frontpage extends Component {
           console.log(error);
         });
     });
-    promise.then((data) => {
-      const newData = [];
-      for (let item in data.data) {
-        newData.push({
-          ...data.data[item],
-          loaded: false,
-          contentEditing: false,
-          contentLoading: false,
-          details: [],
-        });
-      }
-      this.setState({ fetchedData: newData, loading: false });
-    });
+    promise
+      .then((data) => {
+        const newData = [];
+        for (let item in data.data) {
+          newData.push({
+            ...data.data[item],
+            loaded: false,
+            contentLoading: false,
+            details: [],
+          });
+        }
+        this.setState({ fetchedData: newData, loading: false });
+      })
+      .catch((error) => console.log(error));
   };
 
   // UTILS
 
-  linkHandler = async (link) => {
-    return await axios
-      .post("/details", { payload: link })
-      .then((response) => {
-        return response.data;
-      })
-      .catch((e) => {
-        console.log("Server error:" + e);
-      });
-  };
-
   // Initiating feed card editing
 
   contentEditing = (id, value) => {
-    const copiedState = [...this.state.fetchedData];
+    const copiedState = [...this.state.myFeed];
     const index = copiedState.indexOf(
-      copiedState.filter((item) => item.guid === id)[0]
+      copiedState.filter((item) => item.id === id)[0]
     );
     const selectedItem = copiedState[index];
     selectedItem.contentEditing = value;
-    this.setState({ fetchedData: copiedState });
+    this.setState({ myFeed: copiedState });
   };
 
-  // Initiating feed card loading
-
-  contentLoading = (id, value) => {
-    const copiedState = [...this.state.fetchedData];
-    const index = copiedState.indexOf(
-      copiedState.filter((item) => item.guid === id)[0]
-    );
-    const selectedItem = copiedState[index];
-    selectedItem.contentLoading = value;
-    this.setState({ fetchedData: copiedState });
-  };
-
-  // Load
+  // Parse data and re-configure it
 
   loadDetails = (id) => {
-    this.contentLoading(id, true);
-    this.setState({ pushingInProgress: true });
+    // this.contentLoading(id, true);
+    this.setState({
+      fetchedData: contentLoading(id, true, this.state.fetchedData),
+      pushingInProgress: true,
+    });
     const copiedState = [...this.state.fetchedData];
     let myFeedCopy = [...this.state.myFeed];
     const index = copiedState.indexOf(
@@ -124,43 +109,68 @@ class Frontpage extends Component {
     if (selectedItem.categories) {
       Promise.all(
         selectedItem.categories.map(async (item) => {
-          return this.linkHandler(item.$.domain).then((res) => {
-            myFeedCopy = [
-              ...myFeedCopy,
-              {
-                tag: item._ ? item._ : "Trends",
-                body: res,
-                id: id + Math.floor(Math.random() * 100),
-                isModal: false,
-              },
-            ];
+          return urlParser(item.$.domain).then((res) => {
+            console.log(res);
+            if (!res.error)
+              myFeedCopy = [
+                ...myFeedCopy,
+                {
+                  tag: item._ ? item._ : "Trends",
+                  body: res,
+                  id: id + Math.floor(Math.random() * 100),
+                  isModal: false,
+                  author: selectedItem.author,
+                  contentEditing: false,
+                  date: selectedItem.pubDate,
+                },
+              ];
           });
         })
       )
         .then(async () => {
-          const output = this.linkHandler(selectedItem.link);
+          const output = urlParser(selectedItem.link);
           return output.then((res) => {
-            myFeedCopy = [
-              ...myFeedCopy,
-              {
-                tag: "Trends",
-                body: res,
-                id: id + Math.floor(Math.random() * 100),
-                isModal: false,
-              },
-            ];
+            if (!res.error)
+              myFeedCopy = [
+                ...myFeedCopy,
+                {
+                  tag: "Trends",
+                  body: res,
+                  id: id + Math.floor(Math.random() * 100),
+                  isModal: false,
+                  contentEditing: false,
+                  date: selectedItem.pubDate,
+                  author: selectedItem.author,
+                },
+              ];
           });
         })
         .then(() => {
-          this.setState({ myFeed: myFeedCopy, pushingInProgress: false });
-          this.contentLoading(id, false);
+          this.setState({
+            fetchedData: contentLoading(id, false, this.state.fetchedData),
+            myFeed: myFeedCopy,
+            pushingInProgress: false,
+          });
         });
     } else {
-      const output = this.linkHandler(selectedItem.link);
+      const output = urlParser(selectedItem.link);
       output.then((res) => {
-        myFeedCopy.push({ tag: "Trends", body: res, id: id, isModal: false });
-        this.setState({ myFeed: myFeedCopy, pushingInProgress: false });
-        this.contentLoading(id, false);
+        console.log(res);
+        if (!res.error)
+          myFeedCopy.push({
+            tag: "Trends",
+            body: res,
+            id: id,
+            isModal: false,
+            contentEditing: false,
+            author: selectedItem.author,
+            date: selectedItem.pubDate,
+          });
+        this.setState({
+          fetchedData: contentLoading(id, false, this.state.fetchedData),
+          myFeed: myFeedCopy,
+          pushingInProgress: false,
+        });
       });
     }
   };
@@ -168,28 +178,30 @@ class Frontpage extends Component {
   // Edit feed
 
   editFeed = (e, id) => {
-    console.log(e.target.value);
-    console.log(e.target.name);
     this.contentEditing(id, true);
-    const copiedState = [...this.state.fetchedData];
+    const copiedState = [...this.state.myFeed];
     const index = copiedState.indexOf(
-      copiedState.filter((item) => item.guid === id)[0]
+      copiedState.filter((item) => item.id === id)[0]
     );
     const selectedItem = copiedState[index];
-    selectedItem.detailedData.data[e.target.name] = e.target.value;
-    this.setState({ fetchedData: copiedState });
-  };
-
-  saveEdit = (id) => {
-    console.log("save");
-    this.contentEditing(id, false);
+    console.log(selectedItem);
+    selectedItem.body[e.target.name] = e.target.value;
+    this.setState({ myFeed: copiedState });
   };
 
   // Remove Feed
 
   removeFeed = (id) => {
-    const newList = this.state.fetchedData.filter((item) => item.guid !== id);
-    this.setState({ fetchedData: newList });
+    const copiedInitialState = [...this.state.fetchedData];
+    const index = copiedInitialState.indexOf(
+      copiedInitialState.filter((item) => item.guid === id)[0]
+    );
+    const selectedItem = copiedInitialState[index];
+    if (selectedItem.loaded) {
+      selectedItem.loaded = false;
+    }
+    const copiedState = this.state.myFeed.filter((item) => item.id !== id);
+    this.setState({ myFeed: copiedState, fetchedData: copiedInitialState });
     // this.setSession(newList);
   };
 
@@ -238,57 +250,58 @@ class Frontpage extends Component {
     });
   };
 
-  render() {
-    const initialData = this.state.fetchedData.map((item, index) => {
-      return (
-        <div
-          className={item.loaded ? classes.dataDisabled : classes.data}
-          key={index}
-        >
-          {this.state.pushingInProgress ? null : (
-            <div className={classes.deleteEditOverlay}>
-              <button
-                onClick={() => this.loadDetails(item.guid)}
-                disabled={item.loaded}
-              >
-                Add
-              </button>
-            </div>
-          )}
+  // Sort my feed
 
-          {item.contentLoading ? (
-            <Loader />
-          ) : (
-            <Fragment>
-              <p>{item.title}</p>
-              <p>
-                {item.author
-                  ? item.author
-                  : item.creator
-                  ? item.creator
-                  : "Anonymous"}
-              </p>
-              <p>{item.pubDate}</p>
-            </Fragment>
-          )}
-        </div>
-      );
-    });
+  sortMyFeed = () => {
+    const copiedState = [...this.state.myFeed];
+    !this.state.sortLatest
+      ? copiedState.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+      : copiedState.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+    this.setState((prev) => ({
+      sortLatest: !prev.sortLatest,
+      myFeed: copiedState,
+    }));
+  };
+
+  // search
+
+  // onSearchHandler = (e) => {
+  //   let copiedState = [...this.state.myFeed];
+  //   let filteredFeeds = copiedState.filter((item) =>
+  //     item.tag.toLowerCase().includes(e.target.value.toLowerCase())
+  //   );
+  //   this.setState({ filteredFeed: filteredFeeds });
+  // };
+
+  render() {
+    const initialData = this.state.fetchedData.map((item, index) => (
+      <Card
+        key={index}
+        title={item.title}
+        author={item.author ? item.author : item.creator ? item.creator : null}
+        date={item.pubDate}
+        loaded={item.loaded}
+        contentLoading={item.contentLoading}
+        loadDetails={() => this.loadDetails(item.guid)}
+        pushingInProgress={this.state.pushingInProgress}
+      />
+    ));
     const myFeed = this.state.myFeed.map((item, index) => (
       <Loadedcard
         key={index}
         tag={item.tag}
-        // submit={() => saveEdit(item.guid)}
-        // editing={item.contentEditing}
-        // edit={(e) => editFeed(e, item.guid)}
+        submit={() => this.contentEditing(item.id, false)}
+        editing={item.contentEditing}
+        edit={(e) => this.editFeed(e, item.id)}
         image={item.body.lead_image_url}
         title={item.body.title}
-        author={item.body.author ? item.body.author : "Anonymous"}
-        loadFull={() => this.loadFullArticle(item.id)}
-        // remove={() => removeFeed(item.guid)}
-        date={
-          item.body.date_published ? item.body.date_published : "date unknown"
+        author={
+          item.body.author ? item.body.author : item.author ? item.author : null
         }
+        description={item.body.excerpt ? item.body.excerpt : ""}
+        loadFull={() => this.loadFullArticle(item.id)}
+        remove={() => this.removeFeed(item.id)}
+        date={item.date ? item.date : item.body.date_published}
       />
     ));
 
@@ -320,21 +333,39 @@ class Frontpage extends Component {
         {this.state.showModal && !this.state.modalLoading ? modal : null}
         <div className={classes.initialFeedWrapper}>
           <div className={classes.header}>
-            <h1>News Feed</h1>
-            <button>sort</button>
+            <h1>News</h1>
           </div>
-          <div className={classes.initialFeed}>
+          <div
+            className={
+              this.state.loading
+                ? classes.initialFeedLoading
+                : classes.initialFeed
+            }
+          >
             {this.state.loading ? <Loader /> : initialData.sort()}
           </div>
         </div>
-        <div className={classes.wrapper}>
+        <div className={classes.feedWrapper}>
           <div className={classes.header}>
             <h1>My Feed</h1>
-            <button>sort</button>
+            <div className={classes.sorter} onClick={() => this.sortMyFeed()}>
+              {!this.state.sortLatest ? (
+                <i className="fas fa-arrow-up"></i>
+              ) : (
+                <i className="fas fa-arrow-down"></i>
+              )}
+              <p>sort</p>
+            </div>
+            <input
+              type="text"
+              name="search"
+              placeholder="search"
+              // onChange={(e) => this.onSearchHandler(e)}
+            />
           </div>
-          <div className={classes.feed}>{myFeed}</div>
-          <div className={classes.footer}>
-            <h1>2021</h1>
+          <div className={classes.feed}>
+            {myFeed}
+            <Footprint />
           </div>
         </div>
       </div>

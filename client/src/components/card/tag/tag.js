@@ -12,7 +12,7 @@ const tag = ({ name }) => {
     case "Google Photos":
     case "Google One":
     case "Google Pixel":
-      color = "#f0de1f";
+      color = "#b0614c";
       break;
     case "Digital Marketing":
       color = "#853fe0";
@@ -21,7 +21,7 @@ const tag = ({ name }) => {
       color = "#3243b8";
       break;
     case "Privacy":
-      color = "#32e6b9";
+      color = "#3ead90";
       break;
     case "Technology":
     case "IT":
@@ -59,7 +59,7 @@ const tag = ({ name }) => {
 
   return (
     <div className={classes.container} style={{ backgroundColor: color }}>
-      {name}
+      <p>{name}</p>
     </div>
   );
 };

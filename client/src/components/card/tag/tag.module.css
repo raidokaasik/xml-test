@@ -4,4 +4,10 @@
   left: 20px;
   position: absolute;
   z-index: 2;
+  border-radius: 25px;
+  box-shadow: 1px 1px 5px 1px rgba(36, 35, 48, 0.3);
+}
+.container p {
+  font-weight: 300;
+  color: #fff;
 }

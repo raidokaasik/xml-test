@@ -1,57 +1,135 @@
-.cardWrapper {
-  width: 100%;
-  height: 300px;
-  background: rgb(245, 246, 247);
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  border: 1px solid rgba(164, 176, 197, 0.4);
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
-.card {
+
+.data {
   position: relative;
-  width: 100%;
-  height: 100%;
-  background: rgb(245, 246, 247);
+  border-radius: 5px;
+  background: #fff;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 32px;
+  padding: 16px;
+  min-height: 166px;
+  width: 100%;
+}
+
+/* data loaded */
+
+.dataDisabled {
+  position: relative;
   border-radius: 5px;
-  /* border: 1px solid rgba(164, 176, 197, 0.4); */
+  background: #ccc;
+  display: flex;
+  color: rgb(97, 97, 97);
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  min-height: 166px;
+  width: 100%;
 }
-.card:hover {
-  box-shadow: 2px 2px 10px 2px rgba(164, 176, 197, 0.5);
+.dataDisabled .header p {
+  color: #9499a0;
 }
+.dataDisabled .cut {
+  color: #9499a0;
+}
+.dataDisabled .dateNAuthor p,
+.dataDisabled .dateNAuthor h5 {
+  color: #9499a0;
+}
+.dataDisabled .cut {
+  border-bottom: solid 1px #b6bbc2;
+}
+/* overlay on hover */
+
 .deleteEditOverlay {
   display: none;
-  right: 40px;
+  right: 16px;
+  z-index: 6;
   position: absolute;
 }
 
-.card:hover .deleteEditOverlay {
+.data:hover .deleteEditOverlay {
   display: flex;
   position: absolute;
-  right: 40px;
+  right: 16px;
+}
+
+.content {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+.header {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
 }
 .add {
   cursor: pointer;
-  border-radius: 50px;
-  background: rgb(234, 235, 229);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
   border: 1px solid #e2e8f0;
   box-shadow: 0px 1px 2px rgba(45, 55, 72, 0.08);
-  padding: 6px 18px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-direction: row;
-  color: #4a5568;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 44px;
+  min-height: 44px;
+  height: 44px;
 }
 .add:hover {
   border: 1px solid #d2d9e0;
 }
+
 .add i {
-  font-size: 16px;
+  color: #272e3b;
+  font-size: 18px;
+}
+
+.header p {
+  color: #272e3b;
+  margin-right: 50px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.dateNAuthor {
+  width: 100%;
+  position: absolute;
+  top: 130px;
+  bottom: 10px;
+  padding: 0 16px;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+}
+.dateNAuthor p {
+  width: 100%;
+  font-weight: 500;
+  font-size: 14px;
+  color: #5b6981;
+}
+.dateNAuthor span {
+  text-align: right;
+  width: 100%;
+}
+span h5 {
+  font-weight: 400;
+  color: #8f9cb3;
+}
+
+.cut {
+  position: absolute;
+  bottom: 50px;
+
+  width: 90%;
+  border-bottom: solid 1px #dcdfe6;
 }
