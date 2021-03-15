@@ -1,0 +1,30 @@
+.searchBar {
+  display: flex;
+  align-items: center;
+}
+
+.searchBar span {
+  position: relative;
+}
+.searchBar svg {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  pointer-events: none;
+}
+
+.searchBar input {
+  outline: none;
+  background-color: #fff;
+  border: 1px solid rgb(226, 232, 240);
+  border-radius: 4px;
+  margin-right: 12px;
+  height: 40px;
+  width: 204px;
+  padding: 0px 10px 0px 36px;
+  font-size: 14px;
+}
+
+.searchBar input::placeholder {
+  color: #a0aec0;
+}

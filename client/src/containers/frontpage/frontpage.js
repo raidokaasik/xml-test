@@ -8,14 +8,17 @@ import Loadedcard from "../../components/card/loadedcard";
 import Footprint from "../../components/footprint/footprint";
 import contentLoading from "../../utils/contentLoading";
 import urlParser from "../../utils/urlParser";
+import MyFeedHeader from "../../components/headers/myfeedHeader/myFeedHeader";
+import NewsHeader from "../../components/headers/newsHeader/newsHeader";
+import Search from "../../components/searchInput/searchInput";
 import Button from "../../components/button/button";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
   state = {
     fetchedData: [],
+    staticMyFeed: [],
     myFeed: [],
-    filteredFeed: [],
     pushingInProgress: false,
     fullArticle: {},
     loading: false,
@@ -88,7 +91,7 @@ class Frontpage extends Component {
     );
     const selectedItem = copiedState[index];
     selectedItem.contentEditing = value;
-    this.setState({ myFeed: copiedState });
+    this.setState({ myFeed: copiedState, staticMyFeed: copiedState });
   };
 
   // Parse data and re-configure it
@@ -148,6 +151,7 @@ class Frontpage extends Component {
         .then(() => {
           this.setState({
             fetchedData: contentLoading(id, false, this.state.fetchedData),
+            staticMyFeed: myFeedCopy,
             myFeed: myFeedCopy,
             pushingInProgress: false,
           });
@@ -169,6 +173,7 @@ class Frontpage extends Component {
         this.setState({
           fetchedData: contentLoading(id, false, this.state.fetchedData),
           myFeed: myFeedCopy,
+          staticMyFeed: myFeedCopy,
           pushingInProgress: false,
         });
       });
@@ -186,7 +191,7 @@ class Frontpage extends Component {
     const selectedItem = copiedState[index];
     console.log(selectedItem);
     selectedItem.body[e.target.name] = e.target.value;
-    this.setState({ myFeed: copiedState });
+    this.setState({ myFeed: copiedState, staticMyFeed: copiedState });
   };
 
   // Remove Feed
@@ -201,7 +206,11 @@ class Frontpage extends Component {
       selectedItem.loaded = false;
     }
     const copiedState = this.state.myFeed.filter((item) => item.id !== id);
-    this.setState({ myFeed: copiedState, fetchedData: copiedInitialState });
+    this.setState({
+      myFeed: copiedState,
+      staticMyFeed: copiedState,
+      fetchedData: copiedInitialState,
+    });
     // this.setSession(newList);
   };
 
@@ -265,13 +274,13 @@ class Frontpage extends Component {
 
   // search
 
-  // onSearchHandler = (e) => {
-  //   let copiedState = [...this.state.myFeed];
-  //   let filteredFeeds = copiedState.filter((item) =>
-  //     item.tag.toLowerCase().includes(e.target.value.toLowerCase())
-  //   );
-  //   this.setState({ filteredFeed: filteredFeeds });
-  // };
+  onSearchHandler = (e) => {
+    const copiedState = [...this.state.staticMyFeed];
+    let filteredFeeds = copiedState.filter((item) =>
+      item.tag.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    this.setState({ myFeed: filteredFeeds });
+  };
 
   render() {
     const initialData = this.state.fetchedData.map((item, index) => (
@@ -327,14 +336,11 @@ class Frontpage extends Component {
         />
       </Fragment>
     );
-
     return (
       <div className={classes.container}>
         {this.state.showModal && !this.state.modalLoading ? modal : null}
         <div className={classes.initialFeedWrapper}>
-          <div className={classes.header}>
-            <h1>News</h1>
-          </div>
+          <NewsHeader />
           <div
             className={
               this.state.loading
@@ -346,23 +352,11 @@ class Frontpage extends Component {
           </div>
         </div>
         <div className={classes.feedWrapper}>
-          <div className={classes.header}>
-            <h1>My Feed</h1>
-            <div className={classes.sorter} onClick={() => this.sortMyFeed()}>
-              {!this.state.sortLatest ? (
-                <i className="fas fa-arrow-up"></i>
-              ) : (
-                <i className="fas fa-arrow-down"></i>
-              )}
-              <p>sort</p>
-            </div>
-            <input
-              type="text"
-              name="search"
-              placeholder="search"
-              // onChange={(e) => this.onSearchHandler(e)}
-            />
-          </div>
+          <MyFeedHeader
+            changed={(e) => this.onSearchHandler(e)}
+            sorter={() => this.sortMyFeed()}
+            sortLatest={this.state.sortLatest}
+          />
           <div className={classes.feed}>
             {myFeed}
             <Footprint />
