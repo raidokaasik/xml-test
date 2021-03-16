@@ -1,0 +1,38 @@
+.button {
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  margin: 0 4px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0px 1px 2px rgba(45, 55, 72, 0.08);
+  border-radius: 4px;
+  padding: 0 9px;
+  height: 32px;
+  min-width: 32px;
+  width: auto;
+}
+
+.button:hover {
+  border: 1px solid #d2d9e0;
+}
+
+/* .button span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+.button i {
+  font-size: 14px;
+  color: #a0aec0;
+}
+
+.button p {
+  font-weight: 500;
+  margin-left: 7px;
+  font-size: 14px;
+  color: #4a5568;
+}

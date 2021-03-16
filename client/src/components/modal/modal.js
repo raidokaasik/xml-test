@@ -32,7 +32,7 @@ const modal = ({
                     <img src={image} alt="lead_image" />
                   </div>
                   <p>{title}</p>
-                  <button onClick={clicked}>X</button>
+                  {/* <button onClick={clicked}>X</button> */}
                 </div>
                 <div className={classes.body}>{body}</div>
                 <div className={classes.content}>{content}</div>

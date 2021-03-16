@@ -14,7 +14,8 @@
 
 .deleteEditOverlay {
   display: none;
-  right: 40px;
+  right: 16px;
+  top: 16px;
   position: absolute;
 }
 .card:hover {
@@ -23,8 +24,6 @@
 
 .card:hover .deleteEditOverlay {
   display: flex;
-  position: absolute;
-  right: 40px;
 }
 
 .card form {

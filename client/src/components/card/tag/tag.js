@@ -1,11 +1,11 @@
 import React from "react";
 import classes from "./tag.module.css";
 
-const tag = ({ name }) => {
+const tag = ({ name, small, onClick }) => {
   let color = "";
   switch (name) {
     case "Trends":
-      color = "#d938a3";
+      color = "#e32d64";
       break;
     case "Google":
     case "Google Drive":
@@ -58,8 +58,14 @@ const tag = ({ name }) => {
   }
 
   return (
-    <div className={classes.container} style={{ backgroundColor: color }}>
+    <div
+      disabled
+      onClick={onClick}
+      className={small ? classes.containerSmall : classes.container}
+      style={{ backgroundColor: color }}
+    >
       <p>{name}</p>
+      {small ? <i className="fas fa-play"></i> : null}
     </div>
   );
 };

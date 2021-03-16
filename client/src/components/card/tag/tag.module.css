@@ -1,13 +1,49 @@
 .container {
+  cursor: pointer;
   padding: 6px 24px;
-  top: 20px;
-  left: 20px;
+  top: 16px;
+  left: 16px;
   position: absolute;
   z-index: 2;
   border-radius: 25px;
   box-shadow: 1px 1px 5px 1px rgba(36, 35, 48, 0.3);
 }
 .container p {
+  font-weight: 300;
+  color: #fff;
+}
+
+/* small container */
+
+.containerSmall {
+  display: flex;
+  align-items: center;
+  flex-flow: row;
+  gap: 4px;
+  min-width: 80px;
+  cursor: pointer;
+  padding: 3px 10px;
+  opacity: 0.8;
+  z-index: 2;
+  border-radius: 25px;
+  box-shadow: 1px 1px 4px 1px rgba(36, 35, 48, 0.2);
+  transition: 0.1s ease-in-out;
+}
+.containerSmall i {
+  font-size: 10px;
+  opacity: 0.5;
+  color: #fff;
+  transition: 0.1s ease-in-out;
+}
+.containerSmall:hover {
+  opacity: 1;
+}
+.containerSmall:hover i {
+  opacity: 1;
+}
+
+.containerSmall p {
+  font-size: 14px;
   font-weight: 300;
   color: #fff;
 }

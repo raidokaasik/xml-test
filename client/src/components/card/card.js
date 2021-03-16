@@ -1,7 +1,8 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Loader from "../loader/loader";
 import dateCalculator from "../../utils/dateCalculator";
 import cleanName from "../../utils/cleanName";
+import Tag from "./tag/tag";
 import classes from "./card.module.css";
 
 const Card = ({
@@ -12,47 +13,69 @@ const Card = ({
   title,
   author,
   date,
+  categories,
+  subMenuRender,
+  id,
 }) => {
+  const refinedCategories = [];
+  if (categories) {
+    for (let item in categories) {
+      refinedCategories.push({
+        ...categories[item],
+        loaded,
+        contentLoading,
+      });
+    }
+  }
+  const subMenu = (
+    <Fragment>
+      <Tag name="Trends" small onClick={loadDetails} />
+      {categories
+        ? refinedCategories.map((item, index) => (
+            <Tag
+              key={index}
+              onClick={() => {
+                return subMenuRender(item, id, date);
+              }}
+              name={item._}
+              small
+              loaded={item.loaded}
+            />
+          ))
+        : null}
+    </Fragment>
+  );
   const headLine =
     title.substring(0, 1).toUpperCase() + title.substring(1).toLowerCase();
 
   return (
-    <div className={loaded ? classes.dataDisabled : classes.data}>
-      {pushingInProgress ? null : (
-        <div className={classes.deleteEditOverlay}>
-          <div className={classes.add} onClick={loadDetails}>
-            <i className="fas fa-play"></i>
-          </div>
-        </div>
-      )}
-      {contentLoading ? (
-        <Loader />
-      ) : (
-        <div className={classes.content}>
-          <div className={classes.header}>
-            <p>
-              {headLine.length > 85
-                ? `"${headLine.substring(0, 80)}..."`
-                : `"${headLine}"`}
-            </p>
-            {/* <div
-              className={pushingInProgress ? classes.addDisabled : classes.add}
-              onClick={loadDetails}
-            >
-              <i className="fas fa-play"></i>
-            </div> */}
-          </div>
-          <div className={classes.cut}></div>
-          <div className={classes.dateNAuthor}>
-            <p>
-              {cleanName(author) === null ? null : `by ${cleanName(author)}`}
-            </p>
-            <span>
-              <h5>{dateCalculator(date)} ago</h5>
-            </span>
-          </div>
-        </div>
-      )}
+    <div className={classes.data}>
+      <div className={classes.content}>
+        {contentLoading ? (
+          <Loader />
+        ) : (
+          <Fragment>
+            <div className={classes.header}>
+              <p>
+                {headLine.length > 50
+                  ? `${headLine.substring(0, 50) + "..."}`
+                  : `${headLine}`}
+              </p>
+            </div>
+            <div className={classes.cut}></div>
+            <div className={classes.subMenu}>{subMenu}</div>
+
+            <div className={classes.dateNAuthor}>
+              {/* <p>
+                {cleanName(author) === null ? null : `by ${cleanName(author)}`}
+              </p> */}
+              <span>
+                <h5>{dateCalculator(date)} ago</h5>
+              </span>
+            </div>
+          </Fragment>
+        )}
+      </div>
     </div>
   );
 };

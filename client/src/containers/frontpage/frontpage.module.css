@@ -89,7 +89,7 @@
   padding: 48px 64px;
   gap: 32px;
   height: 100%;
-  overflow: auto;
+  overflow: scroll;
 }
 
 .footer {

@@ -10,8 +10,6 @@ import contentLoading from "../../utils/contentLoading";
 import urlParser from "../../utils/urlParser";
 import MyFeedHeader from "../../components/headers/myfeedHeader/myFeedHeader";
 import NewsHeader from "../../components/headers/newsHeader/newsHeader";
-import Search from "../../components/searchInput/searchInput";
-import Button from "../../components/button/button";
 import classes from "./frontpage.module.css";
 
 class Frontpage extends Component {
@@ -29,25 +27,24 @@ class Frontpage extends Component {
   };
 
   componentDidMount() {
-    // this.getSession().then((res) => {
-    //   if (res) {
-    //     this.setState({ fetchedData: res });
-    //   } else {
-    //     this.loadData();
-    //   }
-    // });
+    this.getSession().then((res) => {
+      if (res) {
+        this.setState({ myFeed: res });
+      }
+    });
     this.loadData();
   }
   // SET and GET sessions
 
-  // setSession = (data) => {
-  //   sessionStorage.setItem("mySession", JSON.stringify(data));
-  // };
+  setSession = (data) => {
+    sessionStorage.setItem("mySession", JSON.stringify(data));
+  };
 
-  // getSession = async () => {
-  //   let data = sessionStorage.getItem("mySession");
-  //   return await JSON.parse(data);
-  // };
+  getSession = async () => {
+    let data = sessionStorage.getItem("mySession");
+    return await JSON.parse(data);
+  };
+
   // Fetch initial data from Back-end API
 
   loadData = () => {
@@ -72,7 +69,6 @@ class Frontpage extends Component {
             ...data.data[item],
             loaded: false,
             contentLoading: false,
-            details: [],
           });
         }
         this.setState({ fetchedData: newData, loading: false });
@@ -92,12 +88,12 @@ class Frontpage extends Component {
     const selectedItem = copiedState[index];
     selectedItem.contentEditing = value;
     this.setState({ myFeed: copiedState, staticMyFeed: copiedState });
+    this.setSession(copiedState);
   };
 
   // Parse data and re-configure it
 
   loadDetails = (id) => {
-    // this.contentLoading(id, true);
     this.setState({
       fetchedData: contentLoading(id, true, this.state.fetchedData),
       pushingInProgress: true,
@@ -109,75 +105,52 @@ class Frontpage extends Component {
     );
     const selectedItem = copiedState[index];
     selectedItem.loaded = true;
-    if (selectedItem.categories) {
-      Promise.all(
-        selectedItem.categories.map(async (item) => {
-          return urlParser(item.$.domain).then((res) => {
-            console.log(res);
-            if (!res.error)
-              myFeedCopy = [
-                ...myFeedCopy,
-                {
-                  tag: item._ ? item._ : "Trends",
-                  body: res,
-                  id: id + Math.floor(Math.random() * 100),
-                  isModal: false,
-                  author: selectedItem.author,
-                  contentEditing: false,
-                  date: selectedItem.pubDate,
-                },
-              ];
-          });
-        })
-      )
-        .then(async () => {
-          const output = urlParser(selectedItem.link);
-          return output.then((res) => {
-            if (!res.error)
-              myFeedCopy = [
-                ...myFeedCopy,
-                {
-                  tag: "Trends",
-                  body: res,
-                  id: id + Math.floor(Math.random() * 100),
-                  isModal: false,
-                  contentEditing: false,
-                  date: selectedItem.pubDate,
-                  author: selectedItem.author,
-                },
-              ];
-          });
-        })
-        .then(() => {
-          this.setState({
-            fetchedData: contentLoading(id, false, this.state.fetchedData),
-            staticMyFeed: myFeedCopy,
-            myFeed: myFeedCopy,
-            pushingInProgress: false,
-          });
+    urlParser(selectedItem.link).then((res) => {
+      if (!res.error)
+        myFeedCopy.push({
+          tag: "Trends",
+          body: res,
+          id: id,
+          isModal: false,
+          contentEditing: false,
+          author: selectedItem.author,
+          date: selectedItem.pubDate,
         });
-    } else {
-      const output = urlParser(selectedItem.link);
-      output.then((res) => {
-        console.log(res);
-        if (!res.error)
-          myFeedCopy.push({
-            tag: "Trends",
-            body: res,
-            id: id,
-            isModal: false,
-            contentEditing: false,
-            author: selectedItem.author,
-            date: selectedItem.pubDate,
-          });
-        this.setState({
-          fetchedData: contentLoading(id, false, this.state.fetchedData),
-          myFeed: myFeedCopy,
-          staticMyFeed: myFeedCopy,
-          pushingInProgress: false,
-        });
+      this.setState({
+        fetchedData: contentLoading(id, false, this.state.fetchedData),
+        myFeed: myFeedCopy,
+        staticMyFeed: myFeedCopy,
+        pushingInProgress: false,
       });
-    }
+      this.setSession(myFeedCopy);
+    });
+  };
+
+  // load Subdetails
+
+  loadSubDetails = (item, id, date) => {
+    this.setState({
+      fetchedData: contentLoading(id, true, this.state.fetchedData),
+      pushingInProgress: true,
+    });
+    const copiedState = [...this.state.myFeed];
+    urlParser(item.$.domain).then((res) => {
+      if (!res.error)
+        copiedState.push({
+          tag: item._,
+          body: res,
+          isModal: false,
+          contentEditing: false,
+          id: id + Math.floor(Math.random() * 100),
+          date: date,
+        });
+      this.setState({
+        fetchedData: contentLoading(id, false, this.state.fetchedData),
+        myFeed: copiedState,
+        staticMyFeed: copiedState,
+      });
+      this.setSession(copiedState);
+    });
   };
 
   // Edit feed
@@ -189,28 +162,23 @@ class Frontpage extends Component {
       copiedState.filter((item) => item.id === id)[0]
     );
     const selectedItem = copiedState[index];
-    console.log(selectedItem);
     selectedItem.body[e.target.name] = e.target.value;
     this.setState({ myFeed: copiedState, staticMyFeed: copiedState });
+    this.setSession(copiedState);
   };
 
   // Remove Feed
 
   removeFeed = (id) => {
     const copiedInitialState = [...this.state.fetchedData];
-    const index = copiedInitialState.indexOf(
-      copiedInitialState.filter((item) => item.guid === id)[0]
-    );
-    const selectedItem = copiedInitialState[index];
-    if (selectedItem.loaded) {
-      selectedItem.loaded = false;
-    }
     const copiedState = this.state.myFeed.filter((item) => item.id !== id);
+
     this.setState({
       myFeed: copiedState,
       staticMyFeed: copiedState,
       fetchedData: copiedInitialState,
     });
+    this.setSession(copiedState);
     // this.setSession(newList);
   };
 
@@ -291,8 +259,11 @@ class Frontpage extends Component {
         date={item.pubDate}
         loaded={item.loaded}
         contentLoading={item.contentLoading}
-        loadDetails={() => this.loadDetails(item.guid)}
+        loadDetails={() => this.loadDetails(item.guid, null)}
         pushingInProgress={this.state.pushingInProgress}
+        categories={item.categories ? item.categories : null}
+        subMenuRender={this.loadSubDetails}
+        id={item.guid}
       />
     ));
     const myFeed = this.state.myFeed.map((item, index) => (
@@ -309,7 +280,7 @@ class Frontpage extends Component {
         }
         description={item.body.excerpt ? item.body.excerpt : ""}
         loadFull={() => this.loadFullArticle(item.id)}
-        remove={() => this.removeFeed(item.id)}
+        remove={() => this.removeFeed(item.id, item.body.title)}
         date={item.date ? item.date : item.body.date_published}
       />
     ));
