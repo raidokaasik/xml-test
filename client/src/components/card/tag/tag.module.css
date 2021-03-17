@@ -16,6 +16,8 @@
 /* small container */
 
 .containerSmall {
+  outline: none;
+  border: none;
   display: flex;
   align-items: center;
   flex-flow: row;
@@ -28,6 +30,13 @@
   border-radius: 25px;
   box-shadow: 1px 1px 4px 1px rgba(36, 35, 48, 0.2);
   transition: 0.1s ease-in-out;
+}
+
+.containerSmall:disabled,
+.containerSmall:disabled:hover,
+.containerSmall:disabled:hover i {
+  opacity: 0.6;
+  cursor: initial;
 }
 .containerSmall i {
   font-size: 10px;

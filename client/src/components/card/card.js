@@ -17,25 +17,21 @@ const Card = ({
   subMenuRender,
   id,
 }) => {
-  const refinedCategories = [];
-  if (categories) {
-    for (let item in categories) {
-      refinedCategories.push({
-        ...categories[item],
-        loaded,
-        contentLoading,
-      });
-    }
-  }
   const subMenu = (
     <Fragment>
-      <Tag name="Trends" small onClick={loadDetails} />
+      <Tag
+        disabled={pushingInProgress}
+        name="Trends"
+        small
+        onClick={pushingInProgress ? null : loadDetails}
+      />
       {categories
-        ? refinedCategories.map((item, index) => (
+        ? categories.map((item, index) => (
             <Tag
+              disabled={pushingInProgress}
               key={index}
               onClick={() => {
-                return subMenuRender(item, id, date);
+                return pushingInProgress ? null : subMenuRender(item, id, date);
               }}
               name={item._}
               small

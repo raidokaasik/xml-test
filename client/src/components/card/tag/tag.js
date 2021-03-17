@@ -1,7 +1,7 @@
 import React from "react";
 import classes from "./tag.module.css";
 
-const tag = ({ name, small, onClick }) => {
+const tag = ({ name, small, onClick, disabled }) => {
   let color = "";
   switch (name) {
     case "Trends":
@@ -56,18 +56,29 @@ const tag = ({ name, small, onClick }) => {
     default:
       break;
   }
-
-  return (
+  const tag = (
     <div
-      disabled
       onClick={onClick}
-      className={small ? classes.containerSmall : classes.container}
+      className={classes.container}
       style={{ backgroundColor: color }}
     >
       <p>{name}</p>
       {small ? <i className="fas fa-play"></i> : null}
     </div>
   );
+  const button = (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      className={classes.containerSmall}
+      style={{ backgroundColor: color }}
+    >
+      <p>{name}</p>
+      {small ? <i className="fas fa-play"></i> : null}
+    </button>
+  );
+
+  return small ? button : tag;
 };
 
 export default tag;

@@ -148,6 +148,7 @@ class Frontpage extends Component {
         fetchedData: contentLoading(id, false, this.state.fetchedData),
         myFeed: copiedState,
         staticMyFeed: copiedState,
+        pushingInProgress: false,
       });
       this.setSession(copiedState);
     });
@@ -199,12 +200,13 @@ class Frontpage extends Component {
             id: res[0].id,
             tag: res[0].tag,
             content: res[0].body.content,
-            date: res[0].body.date_published
-              ? res[0].body.date_published
-              : res[0].body.date,
+            date: res[0].date,
+            // date: res[0].body.date_published
+            //   ? res[0].body.date_published
+            //   : res[0].body.date,
             image: res[0].body.lead_image_url,
             url: res[0].body.url,
-            exceprt: res[0].body.exceprt,
+            excerpt: res[0].body.excerpt,
           },
         });
       })
@@ -295,9 +297,9 @@ class Frontpage extends Component {
           loading={this.state.modalLoading}
           show={this.state.showModal}
           title={full.title}
-          body={full.exceprt}
           date={full.date}
           author={full.author}
+          excerpt={full.excerpt}
           content={full.content}
           clicked={() => this.closeFullArticle()}
         />

@@ -1,6 +1,7 @@
 .card {
   position: relative;
   width: 100%;
+  max-width: 350px;
   height: 400px;
   background: rgb(245, 246, 247);
   display: flex;

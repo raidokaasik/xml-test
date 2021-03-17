@@ -56,7 +56,6 @@
   width: 100%;
   display: flex;
   align-items: center;
-
   flex-direction: row;
   margin: 0 0 8px 0;
 }
@@ -84,7 +83,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-evenly;
-
   width: 100%;
   padding: 48px 64px;
   gap: 32px;
@@ -125,4 +123,16 @@
 }
 .sorter i {
   color: #818ca0;
+}
+
+@media (max-width: 1500px) {
+  .feed {
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-evenly;
+  }
+}
+@media (max-width: 1024px) {
+  .feed {
+    grid-template-columns: 1fr;
+  }
 }
