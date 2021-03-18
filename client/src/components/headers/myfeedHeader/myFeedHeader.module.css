@@ -43,6 +43,12 @@
 .sorter i {
   color: #a0aec0;
 }
+.sorter span {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+}
 .newsMenuButton {
   position: absolute;
   opacity: 0;

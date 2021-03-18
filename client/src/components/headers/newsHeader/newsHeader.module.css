@@ -33,7 +33,7 @@
 }
 .closeButton {
   position: absolute;
-  right: 0;
+  right: 16px;
   top: 0;
 }
 .header h1 {

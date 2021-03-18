@@ -183,6 +183,7 @@
     padding: 16px 8px;
   }
   .feedWrapper {
+    width: 400px;
     max-width: 400px;
   }
   .newsFeedWrapper {

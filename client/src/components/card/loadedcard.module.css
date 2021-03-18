@@ -59,6 +59,10 @@
 .titleNauthor section {
   margin: 8px 0 0 0;
 }
+.titleNauthor section p {
+  font-size: 16px;
+  font-weight: 400;
+}
 
 .dateNAuthor {
   width: 100%;

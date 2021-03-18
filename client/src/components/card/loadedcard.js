@@ -20,8 +20,8 @@ const Loadedcard = ({
   description,
 }) => {
   const desc =
-    description.length >= 100
-      ? `${description.substring(0, 100)}...`
+    description.length >= 85
+      ? `${description.substring(0, 85)}...`
       : description;
   const creator = cleanName(author) === null ? "" : `by ${cleanName(author)}`;
   return (
@@ -35,23 +35,17 @@ const Loadedcard = ({
           onClick={loadFull}
         />
       </div>
-      {/* {editing ? (
-        <div className={classes.titleNauthorEdit}>
-          <input type="text" value={title} name="title" onChange={edit} />
-          <input type="text" value={author} name="author" onChange={edit} />
-        </div>
-      ) : ( */}
       <div className={classes.titleNauthor}>
         {editing ? (
           <Input value={title} changed={edit} name="title" />
         ) : (
-          <p>{title}</p>
+          <p onClick={loadFull}>{title}</p>
         )}
         <section>
           {editing ? (
             <Input value={description} changed={edit} name="excerpt" />
           ) : (
-            desc
+            <p onClick={loadFull}>{desc}</p>
           )}
         </section>
         <div className={classes.dateNAuthor}>
@@ -61,10 +55,9 @@ const Loadedcard = ({
           </span>
         </div>
       </div>
-      {/* )} */}
       <div className={classes.deleteEditOverlay}>
         {editing ? (
-          <Button clicked={submit} name="Save" type="save" />
+          <Button clicked={submit} type="save" />
         ) : (
           <Button clicked={edit} type="edit" />
         )}

@@ -12,8 +12,8 @@ const dateCalculator = (date) => {
 
     const weeksndays = (string1) => {
       const numberofWeeks = Math.floor(string1 / 7);
-      const numberofMonths = Math.floor(numberofWeeks / 4);
-      const numberofYears = Math.floor(numberofMonths / 12);
+      // const numberofMonths = Math.floor(numberofWeeks / 4);
+      // const numberofYears = Math.floor(numberofMonths / 12);
       const numberofDays = string1 % 7;
       const weeks =
         Math.floor(string1 / 7) > 1

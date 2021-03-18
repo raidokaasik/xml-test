@@ -68,7 +68,6 @@ class Frontpage extends Component {
         for (let item in data.data) {
           newData.push({
             ...data.data[item],
-            loaded: false,
             contentLoading: false,
           });
         }
@@ -104,8 +103,8 @@ class Frontpage extends Component {
     const index = copiedState.indexOf(
       copiedState.filter((item) => item.guid === id)[0]
     );
+    let error = null;
     const selectedItem = copiedState[index];
-    selectedItem.loaded = true;
     urlParser(selectedItem.link).then((res) => {
       if (!res.error)
         myFeedCopy.push({
@@ -117,8 +116,11 @@ class Frontpage extends Component {
           author: selectedItem.author,
           date: selectedItem.pubDate,
         });
+      else {
+        error = res.error;
+      }
       this.setState({
-        fetchedData: contentLoading(id, false, this.state.fetchedData),
+        fetchedData: contentLoading(id, false, this.state.fetchedData, error),
         myFeed: myFeedCopy,
         staticMyFeed: myFeedCopy,
         pushingInProgress: false,
@@ -187,7 +189,6 @@ class Frontpage extends Component {
   // Handle full Article
 
   loadFullArticle = (id) => {
-    console.log("load full article");
     this.setState({
       modalLoading: true,
     });
@@ -196,15 +197,12 @@ class Frontpage extends Component {
       .then((res) => {
         this.setState({
           fullArticle: {
-            author: res[0].body.author,
+            author: res[0].author ? res[0].author : res[0].body.author,
             title: res[0].body.title,
             id: res[0].id,
             tag: res[0].tag,
             content: res[0].body.content,
             date: res[0].date,
-            // date: res[0].body.date_published
-            //   ? res[0].body.date_published
-            //   : res[0].body.date,
             image: res[0].body.lead_image_url,
             url: res[0].body.url,
             excerpt: res[0].body.excerpt,
@@ -212,8 +210,6 @@ class Frontpage extends Component {
         });
       })
       .then(() => {
-        console.log(this.state.fullArticle);
-        console.log("finished");
         this.setState({
           modalLoading: false,
           showModal: true,
@@ -221,6 +217,8 @@ class Frontpage extends Component {
         });
       });
   };
+
+  // Close full article
 
   closeFullArticle = () => {
     this.setState({
@@ -232,7 +230,7 @@ class Frontpage extends Component {
 
   // Sort my feed
 
-  sortMyFeed = () => {
+  sortMyFeed = (e) => {
     const copiedState = [...this.state.myFeed];
     !this.state.sortLatest
       ? copiedState.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
@@ -259,7 +257,6 @@ class Frontpage extends Component {
     this.setState((prev) => ({
       newsMenu: !prev.newsMenu,
     }));
-    console.log("Menu button: " + this.state.newsMenu);
   };
 
   render() {
@@ -293,7 +290,13 @@ class Frontpage extends Component {
         description={item.body.excerpt ? item.body.excerpt : ""}
         loadFull={() => this.loadFullArticle(item.id)}
         remove={() => this.removeFeed(item.id, item.body.title)}
-        date={item.date ? item.date : item.body.date_published}
+        date={
+          item.date
+            ? item.date
+            : item.body.date_published
+            ? item.body.date_published
+            : null
+        }
       />
     ));
 

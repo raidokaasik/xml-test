@@ -17,29 +17,32 @@ const tag = ({ name, small, onClick, disabled }) => {
     case "Digital Marketing":
       color = "#853fe0";
       break;
+    case "Privacy":
     case "Security":
+    case "Authentication":
+    case "Identity":
       color = "#3243b8";
       break;
-    case "Privacy":
+    case "Codes":
+    case "Nginx":
+    case "Kubernetes":
       color = "#3ead90";
       break;
     case "Technology":
     case "IT":
-    case "Enterprise Tech":
-    case "Business Technology":
+    case "OCR":
       color = "#2faeed";
       break;
-    case "OCR":
-      color = "#f0de1f";
-      break;
-    case "Artificial Intelligence":
-      color = "#f0de1f";
-      break;
     case "Machine Learning":
-      color = "#f0de1f";
+    case "Artificial Intelligence":
+      color = "#d9b31c";
       break;
+
+    case "Enterprise Tech":
+    case "Business Technology":
     case "Enterprise":
-      color = "#f0de1f";
+    case "Grant Writing":
+      color = "#24d146";
       break;
     case "Retail":
       color = "#f0de1f";
@@ -50,8 +53,11 @@ const tag = ({ name, small, onClick, disabled }) => {
     case "Advertising":
       color = "#f0de1f";
       break;
-    case "Authentication":
-      color = "#f0de1f";
+    case "The Web":
+    case "Web Applications":
+    case "Microservices":
+    case "Software Development":
+      color = "#e8721e";
       break;
     default:
       break;

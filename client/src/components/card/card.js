@@ -11,7 +11,6 @@ const Card = ({
   loadDetails,
   contentLoading,
   title,
-  author,
   date,
   categories,
   subMenuRender,
@@ -62,9 +61,6 @@ const Card = ({
             <div className={classes.subMenu}>{subMenu}</div>
 
             <div className={classes.dateNAuthor}>
-              {/* <p>
-                {cleanName(author) === null ? null : `by ${cleanName(author)}`}
-              </p> */}
               <span>
                 <h5>{dateCalculator(date)} ago</h5>
               </span>

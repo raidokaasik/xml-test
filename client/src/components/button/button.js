@@ -1,7 +1,7 @@
 import React from "react";
 import classes from "./button.module.css";
 
-const button = ({ clicked, editing, submit, name, type }) => {
+const button = ({ clicked, name, type }) => {
   const icon =
     type === "delete" ? (
       <i className="far fa-trash-alt"></i>

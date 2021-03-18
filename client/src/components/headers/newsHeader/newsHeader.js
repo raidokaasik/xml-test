@@ -8,7 +8,7 @@ const newsHeader = ({ closeButton, showButton }) => {
         <h1>News</h1>
         {showButton ? (
           <button className={classes.closeButton} onClick={closeButton}>
-            <i class="fas fa-times"></i>
+            <i className="fas fa-times"></i>
           </button>
         ) : null}
       </div>
