@@ -1,4 +1,4 @@
-.card {
+.loadedCard {
   position: relative;
   width: 100%;
   max-width: 350px;
@@ -15,19 +15,19 @@
 
 .deleteEditOverlay {
   display: none;
-  right: 16px;
-  top: 16px;
+  right: 12px;
+  top: 12px;
   position: absolute;
 }
-.card:hover {
+.loadedCard:hover {
   border: 1px solid rgba(164, 176, 197, 0.7);
 }
 
-.card:hover .deleteEditOverlay {
+.loadedCard:hover .deleteEditOverlay {
   display: flex;
 }
 
-.card form {
+.loadedCard form {
   display: flex;
   flex-direction: column;
 }
@@ -83,4 +83,11 @@
 .dateNAuthor span p {
   font-weight: 400;
   color: #8f9cb3;
+}
+@media (max-width: 1500px) {
+  .loadedCard {
+    width: 100%;
+    min-width: 300px;
+    max-width: 350px;
+  }
 }

@@ -25,7 +25,7 @@ const Loadedcard = ({
       : description;
   const creator = cleanName(author) === null ? "" : `by ${cleanName(author)}`;
   return (
-    <div className={classes.card}>
+    <div className={classes.loadedCard}>
       <Tag name={tag} />
       <div className={classes.imageWrapper}>
         <img
@@ -66,7 +66,7 @@ const Loadedcard = ({
         {editing ? (
           <Button clicked={submit} name="Save" type="save" />
         ) : (
-          <Button clicked={edit} name="Edit" type="edit" />
+          <Button clicked={edit} type="edit" />
         )}
         <Button clicked={remove} type="delete" />
       </div>

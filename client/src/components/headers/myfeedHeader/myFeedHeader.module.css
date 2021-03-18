@@ -1,3 +1,13 @@
+.feedHeaderContainer {
+  margin: 10px 0 0;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  z-index: 4;
+  background: #fff;
+}
 .header {
   width: 100%;
   display: flex;
@@ -7,9 +17,17 @@
   margin: 0 0 8px 0;
 }
 .header h1 {
+  width: 100%;
+  min-width: 140px;
   color: #242424;
   font-weight: 400;
 }
+.header section {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
 .sorter {
   cursor: pointer;
   gap: 4px;
@@ -24,4 +42,54 @@
 }
 .sorter i {
   color: #a0aec0;
+}
+.newsMenuButton {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 8px;
+}
+.header button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  background: none;
+}
+.header button i {
+  color: #242424;
+  font-size: 28px;
+  opacity: 0.8;
+}
+.header button i:hover {
+  opacity: 1;
+}
+@media (max-width: 1500px) {
+  .sorter {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 800px) {
+  .feedHeaderContainer {
+    height: 70px;
+  }
+  .header {
+    flex-direction: column;
+  }
+  .newsMenuButton {
+    z-index: 4;
+    opacity: 1;
+    top: 24px;
+  }
+  .header section h1 {
+    position: absolute;
+    top: 24px;
+    left: 45px;
+  }
+  .sorter {
+    margin: 0;
+    position: absolute;
+    top: 16px;
+    right: 0;
+  }
 }

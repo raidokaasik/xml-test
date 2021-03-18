@@ -1,8 +1,7 @@
 .container {
-  cursor: pointer;
-  padding: 6px 24px;
-  top: 16px;
-  left: 16px;
+  padding: 6px 16px;
+  top: 12px;
+  left: 12px;
   position: absolute;
   z-index: 2;
   border-radius: 25px;
@@ -55,4 +54,14 @@
   font-size: 14px;
   font-weight: 300;
   color: #fff;
+}
+
+@media (max-width: 800px) {
+  .container {
+    padding: 6px 14px;
+  }
+  .container p {
+    font-weight: 400;
+    font-size: 14px;
+  }
 }

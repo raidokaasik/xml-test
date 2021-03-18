@@ -20,7 +20,7 @@
   background-color: #fff;
   border: 1px solid rgb(226, 232, 240);
   border-radius: 4px;
-  margin-right: 12px;
+
   height: 40px;
   width: 204px;
   padding: 0px 10px 0px 36px;
@@ -30,3 +30,18 @@
 .searchBar input::placeholder {
   color: #a0aec0;
 }
+@media (max-width: 1500px) {
+  .searchBar input {
+    width: 150px;
+    margin-right: 0;
+  }
+}
+/* @media (max-width: 800px) {
+  .searchBar {
+    position: absolute;
+    width: 150px;
+    margin-right: 0;
+    top: 0;
+    right: 0;
+  }
+} */

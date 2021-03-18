@@ -24,6 +24,7 @@ class Frontpage extends Component {
     showBlackscreen: false,
     showModal: false,
     sortLatest: false,
+    newsMenu: false,
   };
 
   componentDidMount() {
@@ -252,6 +253,15 @@ class Frontpage extends Component {
     this.setState({ myFeed: filteredFeeds });
   };
 
+  // Mobile news menu button
+
+  mobileMenu = () => {
+    this.setState((prev) => ({
+      newsMenu: !prev.newsMenu,
+    }));
+    console.log("Menu button: " + this.state.newsMenu);
+  };
+
   render() {
     const initialData = this.state.fetchedData.map((item, index) => (
       <Card
@@ -312,20 +322,33 @@ class Frontpage extends Component {
     return (
       <div className={classes.container}>
         {this.state.showModal && !this.state.modalLoading ? modal : null}
-        <div className={classes.initialFeedWrapper}>
-          <NewsHeader />
+        <Blackscreen
+          show={this.state.newsMenu}
+          clicked={() => this.mobileMenu()}
+        />
+        <div
+          className={
+            this.state.newsMenu
+              ? classes.newsFeedWrapperMobile
+              : classes.newsFeedWrapper
+          }
+        >
+          <NewsHeader
+            closeButton={() => this.mobileMenu()}
+            showButton={this.state.newsMenu}
+          />
           <div
             className={
-              this.state.loading
-                ? classes.initialFeedLoading
-                : classes.initialFeed
+              this.state.loading ? classes.newsFeedLoading : classes.newsFeed
             }
           >
             {this.state.loading ? <Loader /> : initialData.sort()}
           </div>
         </div>
+
         <div className={classes.feedWrapper}>
           <MyFeedHeader
+            menuOnClick={() => this.mobileMenu()}
             changed={(e) => this.onSearchHandler(e)}
             sorter={() => this.sortMyFeed()}
             sortLatest={this.state.sortLatest}

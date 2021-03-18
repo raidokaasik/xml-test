@@ -63,7 +63,6 @@ const tag = ({ name, small, onClick, disabled }) => {
       style={{ backgroundColor: color }}
     >
       <p>{name}</p>
-      {small ? <i className="fas fa-play"></i> : null}
     </div>
   );
   const button = (

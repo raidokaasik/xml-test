@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
-
+const extractor = require("../extractor.js");
 const Mercury = require("@postlight/mercury-parser");
 
 const Parser = require("rss-parser");
 const parser = new Parser();
+Mercury.addExtractor(extractor);
 
 router.get("/feed", (req, res) => {
   parser.parseURL(

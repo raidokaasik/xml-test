@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import Loader from "../loader/loader";
 import dateCalculator from "../../utils/dateCalculator";
-import cleanName from "../../utils/cleanName";
 import Tag from "./tag/tag";
+import Cut from "../UIelements/cutline/cut";
 import classes from "./card.module.css";
 
 const Card = ({
@@ -58,7 +58,7 @@ const Card = ({
                   : `${headLine}`}
               </p>
             </div>
-            <div className={classes.cut}></div>
+            <Cut />
             <div className={classes.subMenu}>{subMenu}</div>
 
             <div className={classes.dateNAuthor}>
