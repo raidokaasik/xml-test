@@ -3,15 +3,6 @@ const routes = require("./routes/router");
 
 const app = express();
 
-// app.get("/", (req, res) => {
-//   const url = "";
-//   parser.parseURL(
-//     "https://flipboard.com/@raimoseero/feed-nii8kd0sz.rss",
-//     function (err, feed) {
-//       res.json(feed);
-//     }
-//   );
-// });
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/", routes);
